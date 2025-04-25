@@ -41,7 +41,6 @@ class TrainConfig:
     grad_accum_steps: int = 4
     learning_rate: float = 1e-5
     warmup_percentage: float = 0.001
-    audio_prompt_frac: float = 0.2
     eval_step: int = 200
     save_step: int = 2000
     split_ratio: float = 0.9997
@@ -162,7 +161,7 @@ def train_step(model, batch, dia_cfg, train_cfg, opt, sched, writer, global_step
     """
     Perform a single training step: forward, loss, backward, update, log.
     """
-    use_prompt = random.random() < train_cfg.audio_prompt_frac
+    git
     with autocast():
         logits = model(
             src_BxS=batch['src_tokens'],
@@ -276,7 +275,7 @@ def main():
     )
     hf_ds = load_dataset(args.dataset, split="train")
     ckpt_file = hf_hub_download(args.hub_model, filename="dia-v0_1.pth")
-    model = DiaModel(dia_cfg)
+    model = DiaModel(dia_cfg, compute_dtype="float16")
     model.load_state_dict(torch.load(ckpt_file, map_location="cpu"))
     dac_model.to(device)
 
